@@ -1,69 +1,26 @@
-import { CalendarDays, Clock, MapPin, Users } from "lucide-react";
-
-const experiences = [
-  { title: "Ruta de iniciación", duration: "60 min", level: "Sin experiencia", places: 6 },
-  { title: "Ruta por la naturaleza", duration: "90 min", level: "Todos los niveles", places: 8 },
-  { title: "Ruta al atardecer", duration: "2 h", level: "Nivel básico", places: 6 },
-];
+import { useEffect, useMemo, useState } from "react";
+import { CalendarDays, Clock, MapPin, ShieldCheck, Users } from "lucide-react";
+import { BookingModal } from "@/components/BookingModal";
+import { RideCard } from "@/components/RideCard";
+import { bookedPlaces, getBookings, getRides, saveBookings, saveRides } from "@/lib/storage";
+import type { Booking, Ride } from "@/types/booking";
 
 export default function App() {
-  return (
-    <main className="min-h-screen bg-stone-50 text-stone-900">
-      <header className="border-b border-stone-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-          <div>
-            <p className="text-xl font-semibold">Senda Ecuestre</p>
-            <p className="text-sm text-stone-500">Experiencias guiadas a caballo</p>
-          </div>
-          <nav className="flex gap-6 text-sm font-medium">
-            <a href="#experiencias">Experiencias</a>
-            <a href="#reservas">Reservar</a>
-            <a href="#centro">El centro</a>
-          </nav>
-        </div>
-      </header>
+  const [rides, setRides] = useState<Ride[]>(getRides);
+  const [bookings, setBookings] = useState<Booking[]>(getBookings);
+  const [selectedRide, setSelectedRide] = useState<Ride | null>(null);
+  useEffect(() => saveRides(rides), [rides]);
+  useEffect(() => saveBookings(bookings), [bookings]);
+  const available = (ride: Ride) => Math.max(0, ride.capacity - bookedPlaces(ride.id, bookings));
+  const nextRides = useMemo(() => [...rides].sort((a,b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`)), [rides]);
+  const addBooking = (booking: Booking) => setBookings(current => [...current, booking]);
 
-      <section className="mx-auto grid max-w-6xl gap-10 px-6 py-20 lg:grid-cols-2 lg:items-center">
-        <div>
-          <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-800">Reserva online</span>
-          <h1 className="mt-6 text-5xl font-bold leading-tight">Vive una experiencia ecuestre diferente</h1>
-          <p className="mt-5 max-w-xl text-lg leading-8 text-stone-600">
-            Consulta nuestras próximas rutas, comprueba las plazas disponibles y reserva tu experiencia a caballo en pocos minutos.
-          </p>
-          <a href="#experiencias" className="mt-8 inline-flex rounded-lg bg-emerald-700 px-5 py-3 font-semibold text-white hover:bg-emerald-800">
-            Ver próximas rutas
-          </a>
-        </div>
-        <div className="rounded-3xl bg-emerald-900 p-10 text-white shadow-xl">
-          <CalendarDays className="h-10 w-10" />
-          <h2 className="mt-8 text-2xl font-semibold">Próximas salidas</h2>
-          <p className="mt-3 text-emerald-100">Disponibilidad actualizada en este dispositivo.</p>
-          <div className="mt-8 grid grid-cols-2 gap-4 text-sm">
-            <div className="rounded-xl bg-white/10 p-4"><Clock className="mb-2" />Horarios programados</div>
-            <div className="rounded-xl bg-white/10 p-4"><Users className="mb-2" />Plazas limitadas</div>
-          </div>
-        </div>
-      </section>
-
-      <section id="experiencias" className="bg-white py-16">
-        <div className="mx-auto max-w-6xl px-6">
-          <p className="font-semibold text-emerald-700">EXPERIENCIAS</p>
-          <h2 className="mt-2 text-3xl font-bold">Elige tu próxima ruta</h2>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {experiences.map((experience) => (
-              <article key={experience.title} className="rounded-2xl border border-stone-200 p-6 shadow-sm">
-                <h3 className="text-xl font-semibold">{experience.title}</h3>
-                <div className="mt-5 space-y-3 text-sm text-stone-600">
-                  <p className="flex gap-2"><Clock size={18} /> {experience.duration}</p>
-                  <p className="flex gap-2"><Users size={18} /> {experience.level}</p>
-                  <p className="flex gap-2"><MapPin size={18} /> Máximo {experience.places} participantes</p>
-                </div>
-                <button className="mt-6 w-full rounded-lg border border-emerald-700 px-4 py-2 font-semibold text-emerald-800 hover:bg-emerald-50">Ver disponibilidad</button>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-    </main>
-  );
+  return <main className="min-h-screen bg-stone-50 text-stone-900">
+    <header className="sticky top-0 z-30 border-b border-stone-200 bg-white/95 backdrop-blur"><div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4"><div><p className="text-xl font-bold">Senda Ecuestre</p><p className="text-xs text-stone-500">Experiencias guiadas a caballo</p></div><nav className="hidden gap-6 text-sm font-semibold md:flex"><a href="#salidas">Rutas</a><a href="#centro">El centro</a><a href="#seguridad">Seguridad</a></nav></div></header>
+    <section className="mx-auto grid max-w-6xl gap-10 px-6 py-16 lg:grid-cols-[1.2fr_.8fr] lg:items-center"><div><span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-800">Reserva online · plazas en tiempo real</span><h1 className="mt-6 text-4xl font-bold leading-tight sm:text-5xl">Tu próxima aventura empieza a caballo.</h1><p className="mt-5 max-w-2xl text-lg leading-8 text-stone-600">Consulta las próximas experiencias ecuestres, comprueba las plazas disponibles y reserva sin llamadas ni esperas.</p><a href="#salidas" className="mt-8 inline-flex rounded-lg bg-emerald-700 px-5 py-3 font-semibold text-white hover:bg-emerald-800">Consultar disponibilidad</a></div><div className="rounded-3xl bg-emerald-950 p-8 text-white shadow-xl"><CalendarDays className="h-10 w-10"/><h2 className="mt-6 text-2xl font-bold">Reserva sencilla</h2><div className="mt-6 space-y-4 text-emerald-50"><p className="flex gap-3"><Clock/> Elige fecha y horario</p><p className="flex gap-3"><Users/> Comprueba las plazas libres</p><p className="flex gap-3"><ShieldCheck/> Confirma tu experiencia</p></div></div></section>
+    <section id="salidas" className="bg-white py-16"><div className="mx-auto max-w-6xl px-6"><p className="font-bold text-emerald-700">PRÓXIMAS SALIDAS</p><div className="mt-2 flex flex-wrap items-end justify-between gap-4"><h2 className="text-3xl font-bold">Elige tu experiencia</h2><p className="text-sm text-stone-500">La disponibilidad se actualiza al reservar.</p></div><div className="mt-8 grid gap-6 md:grid-cols-2">{nextRides.map(ride => <RideCard key={ride.id} ride={ride} freePlaces={available(ride)} onBook={setSelectedRide}/>)}</div></div></section>
+    <section id="centro" className="mx-auto grid max-w-6xl gap-8 px-6 py-16 md:grid-cols-3"><div className="md:col-span-2"><p className="font-bold text-emerald-700">SENDA ECUESTRE</p><h2 className="mt-2 text-3xl font-bold">Rutas para disfrutar con seguridad</h2><p className="mt-4 leading-7 text-stone-600">Experiencias guiadas para principiantes, familias y jinetes con experiencia. Antes de cada salida asignamos el caballo adecuado y realizamos una breve explicación de manejo y seguridad.</p></div><div className="rounded-2xl border bg-white p-6"><MapPin className="text-emerald-700"/><h3 className="mt-4 font-bold">Punto de encuentro</h3><p className="mt-2 text-sm text-stone-600">Centro Senda Ecuestre · entorno natural y rutas señalizadas.</p></div></section>
+    <section id="seguridad" className="bg-stone-900 py-12 text-stone-100"><div className="mx-auto max-w-6xl px-6"><h2 className="text-2xl font-bold">Antes de montar</h2><p className="mt-3 max-w-3xl text-stone-300">Recomendamos pantalón largo y calzado cerrado. El casco es obligatorio y puede proporcionarlo el centro. Las rutas pueden aplazarse o bloquearse por meteorología o por motivos de seguridad.</p></div></section>
+    {selectedRide && <BookingModal ride={selectedRide} freePlaces={available(selectedRide)} onClose={()=>setSelectedRide(null)} onConfirm={addBooking}/>} 
+  </main>;
 }

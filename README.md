@@ -2,6 +2,14 @@
 
 Demo funcional de una aplicación web de **reservas online para rutas guiadas a caballo**. El objetivo del proyecto es disponer de una versión base, sencilla y portable, que posteriormente pueda compararse y evolucionarse con Lovable.
 
+## Demo pública
+
+La aplicación se publica mediante GitHub Pages en:
+
+**https://hillcoint.github.io/equestre-booking-C/**
+
+El despliegue está automatizado con GitHub Actions. Cada cambio enviado a la rama `main` compila la aplicación con Vite y publica automáticamente el contenido generado en `dist`.
+
 ## Funcionalidades
 
 ### Cliente
@@ -34,6 +42,8 @@ Consecuencia importante: los datos son locales al navegador y dispositivo donde 
 - Tailwind CSS
 - Lucide React
 - localStorage
+- GitHub Actions
+- GitHub Pages
 
 ## Ejecutar en local
 
@@ -69,6 +79,16 @@ src/
 
 La interfaz está planteada con enfoque mobile-first. En pantallas pequeñas se simplifica la navegación, los botones principales ocupan el ancho disponible, las tarjetas reorganizan sus elementos verticalmente y las secciones informativas pasan de varias columnas a una sola. El panel de administración permite desplazamiento y las tablas extensas utilizan scroll horizontal.
 
+## Despliegue
+
+El fichero `.github/workflows/deploy-pages.yml` ejecuta automáticamente:
+
+```text
+checkout → Node.js → npm install → npm run build → publicar dist
+```
+
+`vite.config.ts` utiliza `base: "/equestre-booking-C/"` para que los recursos JavaScript y CSS funcionen correctamente bajo la ruta de proyecto de GitHub Pages.
+
 ## Limitaciones deliberadas de esta versión
 
 - Sin autenticación real para administración.
@@ -84,4 +104,4 @@ El repositorio sirve como **versión C** de referencia. La siguiente fase consis
 
 ## Estado
 
-**MVP funcional de demostración.** Incluye flujo público de reserva, persistencia local, panel administrativo y contenido informativo responsive.
+**MVP funcional de demostración.** Incluye flujo público de reserva, persistencia local, panel administrativo, contenido informativo responsive y despliegue automático en GitHub Pages.

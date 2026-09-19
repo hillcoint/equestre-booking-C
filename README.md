@@ -17,7 +17,7 @@ El despliegue está automatizado con GitHub Actions. Cada cambio enviado a la ra
 - Fecha, hora, duración, nivel y precio por persona.
 - Plazas disponibles calculadas en tiempo real.
 - Formulario de reserva.
-- Bloqueo automático de la reserva cuando una salida está completa o cancelada.
+- Bloqueo automático de la reserva cuando una salida está completa, cancelada o su fecha está bloqueada.
 - Página informativa con experiencia, precios, requisitos, seguridad y ubicación.
 - Diseño responsive para móvil, tablet y escritorio.
 
@@ -25,14 +25,23 @@ El despliegue está automatizado con GitHub Actions. Cada cambio enviado a la ra
 - Creación de nuevas salidas.
 - Configuración de fecha, hora, duración, nivel, cupo y precio.
 - Consulta de reservas y participantes por salida.
-- Bloqueo y reapertura de rutas por seguridad o meteorología.
-- Compartir por WhatsApp el resumen de reservas de una salida.
+- Bloqueo y reapertura de rutas concretas.
+- Bloqueo y reapertura de fechas completas.
+- Compartir por WhatsApp el listado de reservas de todo el día.
+
+## Guía de uso
+
+La guía breve solicitada en los entregables está disponible en:
+
+**`docs/GUIA_USO.md`**
+
+Incluye cómo crear una salida, bloquear una fecha, reabrirla, compartir reservas por WhatsApp y qué ocurre si se borran los datos del navegador.
 
 ## Persistencia
 
-Esta versión **no utiliza backend ni base de datos externa**. Las rutas y reservas se almacenan en `localStorage` del navegador. Esto permite probar el flujo completo sin Supabase, servidor PHP ni API.
+Esta versión **no utiliza backend ni base de datos externa**. Las rutas, reservas y fechas bloqueadas se almacenan en `localStorage` del navegador. Esto permite probar el flujo completo sin Supabase, servidor PHP ni API.
 
-Consecuencia importante: los datos son locales al navegador y dispositivo donde se realiza la prueba. No es todavía una solución multiusuario ni una versión preparada para producción.
+Consecuencia importante: los datos son locales al navegador y dispositivo donde se realiza la prueba. Si se borran los datos del sitio o el `localStorage`, se perderán las reservas, salidas añadidas y fechas bloqueadas guardadas en ese dispositivo.
 
 ## Tecnologías
 
@@ -54,7 +63,7 @@ npm install
 npm run dev
 ```
 
-Vite mostrará la URL local de desarrollo. Para comprobar que la aplicación compila para producción:
+Para comprobar la compilación de producción:
 
 ```bash
 npm run build
@@ -65,7 +74,7 @@ npm run build
 ```text
 src/
 ├── components/
-│   ├── AdminPanel.tsx      # Gestión interna de salidas y reservas
+│   ├── AdminPanel.tsx      # Gestión interna de salidas, fechas y reservas
 │   ├── BookingModal.tsx    # Formulario/modal de reserva
 │   └── RideCard.tsx        # Tarjeta pública de cada salida
 ├── lib/
@@ -73,6 +82,9 @@ src/
 ├── types/
 │   └── booking.ts          # Tipos Ride y Booking
 └── App.tsx                 # Página principal y composición de la aplicación
+
+docs/
+└── GUIA_USO.md             # Guía breve de operación
 ```
 
 ## Responsive
@@ -98,10 +110,6 @@ checkout → Node.js → npm install → npm run build → publicar dist
 - Sin dirección comercial real: la ubicación mostrada es demostrativa.
 - WhatsApp se utiliza mediante enlace de compartir, no mediante WhatsApp Business API.
 
-## Siguiente fase
-
-El repositorio sirve como **versión C** de referencia. La siguiente fase consiste en crear una versión equivalente mediante Lovable para estudiar el flujo de trabajo, estructura generada, integración con GitHub y una futura migración o evolución hacia backend real/Supabase.
-
 ## Estado
 
-**MVP funcional de demostración.** Incluye flujo público de reserva, persistencia local, panel administrativo, contenido informativo responsive y despliegue automático en GitHub Pages.
+**MVP funcional de demostración.** Incluye flujo público de reserva, persistencia local, panel administrativo, bloqueo de fechas, listado diario por WhatsApp, contenido informativo responsive, guía de uso y despliegue automático en GitHub Pages.
